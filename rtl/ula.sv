@@ -3,9 +3,10 @@
 * 16-bit Logic Arithmetic Unit
 */
 module ALU_16 (
-  input [15:0] a, b;
-  output logic [15:0] out;
-  output logic [3:0] flags; // Z, C, V, N
+  input [15:0] a, 
+  input [15:0] b,
+  output logic [15:0] out,
+  output logic [3:0] flags // Z, C, V, N
   );
 
   logic z, c, v, n;
