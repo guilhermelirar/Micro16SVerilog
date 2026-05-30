@@ -3,6 +3,7 @@
 * 16-bit Logic Arithmetic Unit
 */
 module alu (
+  input [3:0] operation,
   input [15:0] a, 
   input [15:0] b,
   output logic [15:0] out,
