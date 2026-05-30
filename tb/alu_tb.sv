@@ -33,31 +33,45 @@ module alu_tb;
       );
 
     if (z != (out == 0))
-      $error("FAIL flag Z not set when output 0");
+      $error("FAIL flag Z");
 
-    if (n != (out < 0))
-      $error("FAIL flag N not set when out < 0");
+    if (n != out[15])
+      $error("FAIL flag N");
 
     if (op_in == `OP_ADD) begin
-      if (v != ((a < 0 && b < 0 && out > 0) 
-        || (a > 0 && b > 0 && out < 0)))
-        $error("FAIL flag V not set when overflow");
+      if (v != ((~a[15] && ~b[15] && out[15]) 
+        || (a[15] && b[15] && ~out[15])))
+        $error("FAIL flag V");
 
-      if (c != (a + b > 255))
+      if (c != (({1'b0, a} + {1'b0, b}) >> 16))
         $error("FAIL incorrect carry flag");
     end 
 
   end
   endtask
 
+  task test_random;
+    logic [15:0] a_in;
+    logic [15:0] b_in;
+
+    for (int i = 0; i < 100; i++) begin
+      a_in = $random;
+      b_in = $random;
+      check_result(a_in, b_in, `OP_ADD, a_in + b_in);     
+    end 
+  endtask
 
   initial begin 
     $display("--- Starting ALU simulation ---");
-    $display("  A    B    Out   ZCVN ");
-    $monitor(" %3d %3d %4d %b ", a, b, out, flags);
+    $display("  A     B     Out    ZCVN ");
+    $monitor(" %-5d  %-5d %-5d  %b ", a, b, out, flags);
 
     check_result(10, 20, `OP_ADD, 30);
     check_result(0, 0, `OP_ADD, 0);
+    check_result(16'hffff, 1, `OP_ADD, 0);
+    check_result(10, -20, `OP_ADD, -10);
+    check_result(16'h7fff, 1, `OP_ADD, 16'h8000);
+    test_random();
 
     $finish;
   end 

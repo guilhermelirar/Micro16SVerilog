@@ -12,5 +12,17 @@ module alu (
 
   logic z, c, v, n;
   assign flags = {z, c, v, n};
+  assign z = (out == 0);
+  assign n = (out[15]);
+
+  always_comb begin
+    case (operation)
+      `OP_ADD: begin
+        {c, out} = a + b;
+        v = (~a[15] & ~b[15] & n) |  // a, b > 0 out < 0
+            (a[15] & b[15] & ~n);     // a, b < 0 out > 0
+      end
+    endcase 
+  end 
 
 endmodule
