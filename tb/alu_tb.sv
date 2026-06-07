@@ -15,7 +15,7 @@ module alu_tb;
 
   alu dut ( .operation(operation), .a(a), .b(b), .out(out), .flags(flags) );
 
-  assert property (@(out) (out == 16'h0000) -> z);
+  assert property (@(out) (out == 16'h0000) <-> z);
   assert property (@(out) (operation == `OP_ADD) -> {c, out} == a + b);
   assert property (@(out) out[15] -> n);
 
