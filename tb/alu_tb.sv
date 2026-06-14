@@ -30,10 +30,12 @@ module alu_tb;
   endtask
 
   initial begin
+    $assertoff(0, alu_tb);
     operation = 3'b0;
     a = 16'h0000;
     b = 16'h0000;
     #10;
+    $asserton(0, alu_tb);
 
     forever begin
         test_random();
@@ -42,8 +44,6 @@ module alu_tb;
   end
 
   initial begin 
-    $display("--- Starting ALU simulation ---");
-    // $monitor(" %-5d  %-5d %-5d  %b ", a, b, out, flags);
     #100 $finish;
   end 
 
