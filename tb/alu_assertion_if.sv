@@ -12,15 +12,15 @@ interface alu_assertions_if (
   assign {a_neg, b_neg, out_neg} = {operand_a[15], operand_b[15], alu_out[15]};
 
   property p_zero_flag;
-    @(alu_out) (alu_out == 16'h0000) <-> z;
+    @(alu_ctrl) (alu_out == 16'h0000) <-> z;
   endproperty
 
   property p_negative_flag;
-    @(alu_out) out_neg <-> n;
+    @(alu_ctrl) out_neg <-> n;
   endproperty
 
   property p_overflow_add;
-    @(alu_out) (alu_ctrl == `OP_ADD) |->
+    @(alu_ctrl) (alu_ctrl == `OP_ADD) |->
       // pos + pos = neg (overflow)
       ((!a_neg && !b_neg && out_neg) || 
       // neg + neg = pos (overflow)
@@ -29,7 +29,7 @@ interface alu_assertions_if (
   endproperty
 
   property p_overflow_sub;
-    @(alu_out) (alu_ctrl == `OP_SUB) |->
+    @(alu_ctrl) (alu_ctrl == `OP_SUB) |->
       // pos - neg = neg (overflow)
       ((!a_neg && !b_neg && out_neg) || 
       // neg - pos = pos (overflow)
@@ -38,15 +38,21 @@ interface alu_assertions_if (
   endproperty
 
   property p_add_carry;
-    @(alu_out) (alu_ctrl == `OP_ADD) |->
+    @(alu_ctrl) (alu_ctrl == `OP_ADD) |->
       {c, alu_out} == operand_a + operand_b;
-  endproperty;
+  endproperty
+
+  property p_sub;
+    @(alu_ctrl) (alu_ctrl == `OP_SUB) |-> 
+      (alu_out == operand_a - operand_b);
+  endproperty
 
   assert_overflow_add: assert property (p_overflow_add);
   assert_overflow_sub: assert property (p_overflow_sub);
   assert_zero_flag:    assert property (p_zero_flag);
   assert_negative_flag: assert property (p_negative_flag);
   assert_add_c: assert property (p_add_carry);
+  assert_sub: assert property (p_sub);
 
 endinterface
 
