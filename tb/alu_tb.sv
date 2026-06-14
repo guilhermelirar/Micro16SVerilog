@@ -21,12 +21,21 @@ module alu_tb;
     .z(z), .c(c), .v(v), .n(n)
     );
 
-  task test_random;
-    for (int i = 0; i < 100; i++) begin
-      a = $random;
-      b = $random;
-      operation = `OP_ADD;
-    end 
+  task test();
+    bit [15:0] operand_a;
+    bit [15:0] operand_b;
+    bit [3:0]  alu_ctrl;
+
+    operand_a = $urandom(); 
+    operand_b = $urandom();
+    
+    alu_ctrl  = $urandom_range(0, 15); 
+
+    operation = alu_ctrl;
+    a         = operand_a; 
+    b         = operand_b;
+    
+    #5; 
   endtask
 
   initial begin
@@ -38,13 +47,12 @@ module alu_tb;
     $asserton(0, alu_tb);
 
     forever begin
-        test_random();
-        #1; 
+        test();
     end
   end
 
   initial begin 
-    #100 $finish;
+    #500 $finish;
   end 
 
 endmodule;
