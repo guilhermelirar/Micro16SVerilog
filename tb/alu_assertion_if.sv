@@ -31,9 +31,9 @@ interface alu_assertions_if (
   property p_overflow_sub;
     @(posedge clk) (alu_ctrl == `OP_SUB) |->
       // pos - neg = neg (overflow)
-      ((!a_neg && !b_neg && out_neg) || 
+      ((!a_neg && b_neg && out_neg) || 
       // neg - pos = pos (overflow)
-       (a_neg && b_neg && !out_neg)) 
+       (a_neg && !b_neg && !out_neg)) 
       <-> v; 
   endproperty
 
