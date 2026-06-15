@@ -5,22 +5,22 @@ interface alu_assertions_if (
   input logic [15:0] operand_b,
   input logic [15:0] alu_out,
   input logic [3:0] alu_ctrl,
-  input logic z, c, v, n
+  input logic z, c, v, n, clk
   );
 
   logic a_neg, b_neg, out_neg;
   assign {a_neg, b_neg, out_neg} = {operand_a[15], operand_b[15], alu_out[15]};
 
   property p_zero_flag;
-    @(alu_ctrl) (alu_out == 16'h0000) <-> z;
+    @(posedge clk) (alu_out == 16'h0000) <-> z;
   endproperty
 
   property p_negative_flag;
-    @(alu_ctrl) out_neg <-> n;
+    @(posedge clk) out_neg <-> n;
   endproperty
 
   property p_overflow_add;
-    @(alu_ctrl) (alu_ctrl == `OP_ADD) |->
+    @(posedge clk) (alu_ctrl == `OP_ADD) |->
       // pos + pos = neg (overflow)
       ((!a_neg && !b_neg && out_neg) || 
       // neg + neg = pos (overflow)
@@ -29,7 +29,7 @@ interface alu_assertions_if (
   endproperty
 
   property p_overflow_sub;
-    @(alu_ctrl) (alu_ctrl == `OP_SUB) |->
+    @(posedge clk) (alu_ctrl == `OP_SUB) |->
       // pos - neg = neg (overflow)
       ((!a_neg && !b_neg && out_neg) || 
       // neg - pos = pos (overflow)
@@ -38,12 +38,12 @@ interface alu_assertions_if (
   endproperty
 
   property p_add_carry;
-    @(alu_ctrl) (alu_ctrl == `OP_ADD) |->
+    @(posedge clk) (alu_ctrl == `OP_ADD) |->
       {c, alu_out} == operand_a + operand_b;
   endproperty
 
   property p_sub;
-    @(alu_ctrl) (alu_ctrl == `OP_SUB) |-> 
+    @(posedge clk) (alu_ctrl == `OP_SUB) |-> 
       (alu_out == operand_a - operand_b);
   endproperty
 
