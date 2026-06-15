@@ -22,6 +22,12 @@ module alu (
         v = (~a[15] & ~b[15] & n) |  // a, b > 0 out < 0
             (a[15] & b[15] & ~n);     // a, b < 0 out > 0
       end
+
+      `OP_SUB: begin
+        out = a - b;
+        v = (~a[15] & b[15] & n) | 
+          (a[15] & ~b[15] & ~n); 
+      end 
     endcase 
   end 
 
