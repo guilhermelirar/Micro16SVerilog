@@ -13,7 +13,6 @@ module alu_tb;
   assign {z, c, v, n} = flags;
   logic clk;
   
-
   alu dut ( .operation(operation), .a(a), .b(b), .out(out), .flags(flags) );
   
   alu_assertions_if fiscal_inst (

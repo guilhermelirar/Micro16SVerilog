@@ -28,6 +28,36 @@ module alu (
         v = (~a[15] & b[15] & n) | 
           (a[15] & ~b[15] & ~n); 
       end 
+
+      `OP_SHR: begin 
+        out = a >> b & 4'hF;
+        v = 0; c = 0; // TODO
+      end 
+
+      `OP_SHL: begin 
+        out = a << b & 4'hF;
+        v = 0; c = 0; // TODO
+      end 
+
+      `OP_OR: begin 
+        out = a | b;
+        v = 0; c = 0;
+      end
+
+      `OP_AND: begin 
+        out = a & b;
+        v = 0; c = 0;
+      end
+
+      `OP_XOR: begin 
+        out = a ^ b;
+        v = 0; c = 0;
+      end
+
+      `OP_PASS: begin 
+        out = b;
+        v = 0; c = 0;
+      end 
     endcase 
   end 
 
