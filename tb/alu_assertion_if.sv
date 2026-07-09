@@ -22,19 +22,19 @@ interface alu_assertions_if (
   property p_overflow_add;
     @(posedge clk) (alu_ctrl == `OP_ADD) |->
       // pos + pos = neg (overflow)
-      ((!a_neg && !b_neg && out_neg) || 
+      ((!a_neg && !b_neg && out_neg) ||
       // neg + neg = pos (overflow)
-       (a_neg && b_neg && !out_neg)) 
-      <-> v; 
+       (a_neg && b_neg && !out_neg))
+      <-> v;
   endproperty
 
   property p_overflow_sub;
     @(posedge clk) (alu_ctrl == `OP_SUB) |->
       // pos - neg = neg (overflow)
-      ((!a_neg && b_neg && out_neg) || 
+      ((!a_neg && b_neg && out_neg) ||
       // neg - pos = pos (overflow)
-       (a_neg && !b_neg && !out_neg)) 
-      <-> v; 
+       (a_neg && !b_neg && !out_neg))
+      <-> v;
   endproperty
 
   property p_add_carry;
@@ -43,7 +43,7 @@ interface alu_assertions_if (
   endproperty
 
   property p_sub;
-    @(posedge clk) (alu_ctrl == `OP_SUB) |-> 
+    @(posedge clk) (alu_ctrl == `OP_SUB) |->
       (alu_out == operand_a - operand_b);
   endproperty
 
@@ -55,4 +55,3 @@ interface alu_assertions_if (
   assert_sub: assert property (p_sub);
 
 endinterface
-
