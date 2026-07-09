@@ -12,13 +12,21 @@ module alu_tb;
   assign {z, c, v, n} = flags;
   logic clk;
 
-  bind alu alo_assertions_if fiscal_inst (
+  alu dut (
+      .operation(operation),
+      .a(a),
+      .b(b),
+      .out(out),
+      .flags(flags)
+    );
+
+  bind alu alu_assertions_if fiscal_inst (
     .a(a),
     .b(b),
     .alu_out(out),
     .alu_ctrl(operation),
     .z(flags[3]), .c(flags[2]), .v(flags[1]), .n(flags[0]),
-    .clk(clk)
+    .clk(alu_tb.clk)
   );
 
   task apply_stimulus(int quantity);
@@ -38,7 +46,7 @@ module alu_tb;
         operation = 4'b0;
         a = 16'h0000;
         b = 16'h0000;
-        #10;
+        #15;
         $asserton(0, alu_tb);
         apply_stimulus(1000);       end
 
