@@ -1,57 +1,56 @@
 `include "defines.v"
 
 interface alu_assertions_if (
-  input logic [15:0] operand_a,
-  input logic [15:0] operand_b,
+  input logic [15:0] a,
+  input logic [15:0] b,
   input logic [15:0] alu_out,
   input logic [3:0] alu_ctrl,
   input logic z, c, v, n, clk
   );
 
-  logic a_neg, b_neg, out_neg;
-  assign {a_neg, b_neg, out_neg} = {operand_a[15], operand_b[15], alu_out[15]};
+  clocking cb @(posedge clk);
+    default input #1step output #1;
+    input z, c, v, n, alu_out, a, b, alu_ctrl;
+  endclocking
 
   property p_zero_flag;
-    @(posedge clk) (alu_out == 16'h0000) <-> z;
+    (cb.alu_out == 16'h0000) <-> cb.z;
   endproperty
 
   property p_negative_flag;
-    @(posedge clk) out_neg <-> n;
+    cb.alu_out[15] <-> cb.n;
   endproperty
 
   property p_overflow_add;
-    @(posedge clk) (alu_ctrl == `OP_ADD) |->
-      // pos + pos = neg (overflow)
-      ((!a_neg && !b_neg && out_neg) ||
-      // neg + neg = pos (overflow)
-       (a_neg && b_neg && !out_neg))
-      <-> v;
-  endproperty
+      (cb.alu_ctrl == `OP_ADD) |->
+        ((!cb.a[15] && !cb.b[15] && cb.alu_out[15]) ||
+         (cb.a[15] && cb.b[15] && !cb.alu_out[15]))
+        <-> cb.v;
+    endproperty
 
-  property p_overflow_sub;
-    @(posedge clk) (alu_ctrl == `OP_SUB) |->
-      // pos - neg = neg (overflow)
-      ((!a_neg && b_neg && out_neg) ||
-      // neg - pos = pos (overflow)
-       (a_neg && !b_neg && !out_neg))
-      <-> v;
-  endproperty
+    property p_overflow_sub;
+      (cb.alu_ctrl == `OP_SUB) |->
+        ((!cb.a[15] && cb.b[15] && cb.alu_out[15]) ||
+         (cb.a[15] && !cb.b[15] && !cb.alu_out[15]))
+        <-> cb.v;
+    endproperty
 
   property p_add_carry;
-    @(posedge clk) (alu_ctrl == `OP_ADD) |->
-      {c, alu_out} == operand_a + operand_b;
+    (cb.alu_ctrl == `OP_ADD) |->
+      {cb.c, cb.alu_out} == cb.a + cb.b;
   endproperty
 
   property p_sub;
-    @(posedge clk) (alu_ctrl == `OP_SUB) |->
-      (alu_out == operand_a - operand_b);
+    (cb.alu_ctrl == `OP_SUB) |->
+      (cb.alu_out == cb.a - cb.b);
   endproperty
 
-  assert_overflow_add: assert property (p_overflow_add);
-  assert_overflow_sub: assert property (p_overflow_sub);
-  assert_zero_flag:    assert property (p_zero_flag);
-  assert_negative_flag: assert property (p_negative_flag);
-  assert_add_c: assert property (p_add_carry);
-  assert_sub: assert property (p_sub);
+
+  assert_overflow_add:  assert property (@(cb) p_overflow_add);
+  assert_overflow_sub:  assert property (@(cb) p_overflow_sub);
+  assert_zero_flag:     assert property (@(cb) p_zero_flag);
+  assert_negative_flag: assert property (@(cb) p_negative_flag);
+  assert_add_c:         assert property (@(cb) p_add_carry);
+  assert_sub:           assert property (@(cb) p_sub);
 
 endinterface
