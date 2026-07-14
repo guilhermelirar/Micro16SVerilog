@@ -47,14 +47,14 @@ module regfile_tb;
     @top_io.cb;
     if (top_io.cb.data_out1 != golden_regfile[r1] ||
       top_io.cb.data_out2 != golden_regfile[r2]) begin
-        $display("[ERROR] (write 0x%h into r%0d)", data, r2);
-        $display("\tgot: r%0d:0x%h r%0d:0x%h instead of  r%0d:0x%h r%0d:0x%h",
+        $display("[ERROR] (write 0x%h)", data);
+        $display("\tgot: r%0d:0x%h r%0d:0x%h instead of r%0d:0x%h r%0d:0x%h",
           r1, top_io.cb.data_out1, r2, top_io.cb.data_out2,
           r1, golden_regfile[r1], r2, golden_regfile[r2]);
         $finish;
     end
 
-    $display("[NOTE] wrote 0x%h into r%0d; read r%0d:0x%h, r%0d:0x%h",
+    $display("[NOTE] W 0x%h; read r%0d:0x%h, r%0d:0x%h",
       data, r2, r1, top_io.cb.data_out1, r2, top_io.cb.data_out2);
 
   endtask
